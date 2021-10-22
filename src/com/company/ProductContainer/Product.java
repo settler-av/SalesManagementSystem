@@ -1,7 +1,6 @@
 package com.company.ProductContainer;
 
 import java.io.*;
-import java.util.Locale;
 import java.util.Scanner;
 
 import static java.lang.Double.parseDouble;
@@ -111,7 +110,35 @@ public class Product {
      * @implNote This method will delete product from the Product file
      */
     public void deleteItem() {
+        int tempCode; //user input to search for code
+        String buffer;
+        Scanner input = new Scanner(System.in);
 
+        System.out.println("Press any key to see the list...");
+        input.nextLine();
+        // TODO: 22-10-2021 fetch the list from the file
+        System.out.print("Enter the code of product you want to delete : ");
+        tempCode = input.nextInt();
+        if(!itemFound(tempCode)){
+            System.out.println("Record not found");
+            return;
+        }
+
+        //Display the details for product code `tempCode`
+        displayRecord(tempCode);
+
+        //Confirmation from user block
+        do{
+            System.out.println("Do you want to delete this record (Y/N) : ");
+            buffer = input.nextLine();
+        }while(!(buffer.equalsIgnoreCase("Y") && buffer.equalsIgnoreCase("N")));
+
+        if(buffer.equalsIgnoreCase("N")){
+            System.out.println("The record is not deleted.");
+            return;
+        }
+        deleteRecord(tempCode);
+        System.out.println("Record deleted");
     }
 
     public void modifyItem() {
@@ -139,7 +166,7 @@ public class Product {
     private void displayRecord(int tempCode) {
     }
 
-    private int itemFound(int tempCode) {
+    private boolean itemFound(int tempCode) {
         return 0;
     }
 
