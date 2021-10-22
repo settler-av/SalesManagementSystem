@@ -28,7 +28,7 @@ public class Account {
     /**
      * will show the
      */
-    void billList(){
+    public void billList(){
 
     }
 }

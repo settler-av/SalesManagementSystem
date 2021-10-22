@@ -1,5 +1,6 @@
 package com.company.ProductContainer;
 
+import java.io.*;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -13,11 +14,12 @@ public class Product {
     String itemName;
     double itemCost;
     double itemPrice;
+    File productsFile = new File("src/com/company/ProductContainer/Product.dat");
 
     /**
      * @implNote this function add Records in the Product.dat
      */
-    public void addItem() {
+    public void addItem() throws IOException {
         int tempCode;//Temporary product code to traverse in file
         boolean isValid; //To check item given by user is valid or not
         String userInput; //To handle user input from the console
@@ -33,59 +35,64 @@ public class Product {
             System.out.println("Item code : " + tempCode);
 
             //block to get Item name
-            do{
+            do {
                 isValid = true;
                 System.out.println("Enter item name to add in the menu");
                 System.out.print("Item Name : ");
                 itemName = input.nextLine();
                 itemName = itemName.toUpperCase();
-                if(itemName.length() <1 || itemName.length()>20){
+                if (itemName.length() < 1 || itemName.length() > 20) {
                     isValid = false;
                     System.out.println("Range of name = 1 ... 20");
                 }
-            }while (!isValid);
+            } while (!isValid);
             System.out.println("Item Name (Confirmed) : " + itemName);
 
             //Block to get the cost of item
-            do{
+            do {
                 isValid = true;
                 System.out.println("Enter item cost to add in the menu");
                 System.out.print("Item Cost : ");
                 itemCostStr = input.nextLine();
                 itemCost = parseDouble(itemCostStr);
-                if(itemCost < 1 || itemCost > 800){
+                if (itemCost < 1 || itemCost > 800) {
                     isValid = false;
                     System.out.println("Range of cost = 1 ... 800");
                 }
-            }while(!isValid);
+            } while (!isValid);
             System.out.println("Item Cost (Confirmed): " + itemCost);
 
             //Block to get the selling price of item
-            do{
+            do {
                 isValid = true;
                 System.out.println("Enter item price to add in the menu");
                 System.out.print("Item price : ");
                 itemPriceStr = input.nextLine();
                 itemPrice = parseDouble(itemPriceStr);
-                if(itemPrice < 1 || itemPrice > 800){
+                if (itemPrice < 1 || itemPrice > 800) {
                     isValid = false;
-                    System.out.println("Range of price = " +itemCost+ "... 1000");
+                    System.out.println("Range of price = " + itemCost + "... 1000");
                 }
-            }while(!isValid);
+            } while (!isValid);
             System.out.println("Item Price (Confirmed): " + itemPrice);
 
             //Getting Confirmation from user
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            do{
+            do {
                 System.out.println("Do you want to save this record? (y/n) : ");
                 userInput = input.nextLine();
-            }while(!(userInput.equalsIgnoreCase("Y") && userInput.equalsIgnoreCase("N")));
+            } while (!(userInput.equalsIgnoreCase("Y") && userInput.equalsIgnoreCase("N")));
 
             //If yes update the file product.dat
-            if(userInput.equalsIgnoreCase("Y")){
+            if (userInput.equalsIgnoreCase("Y")) {
                 itemCode = tempCode;
                 //open the file update and close use try catch block
 
+                try (FileOutputStream logger = new FileOutputStream(productsFile)) {
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
 //                //if operation is successful
 //                tempCode++;
 
@@ -93,14 +100,18 @@ public class Product {
             }
 
             //Ask if user want to add more records or not
-            do{
+            do {
                 System.out.print("Do you want to add more records (y/n) : ");
-                userInput=input.nextLine();
-            }while (!(userInput.equalsIgnoreCase("Y") && userInput.equalsIgnoreCase("N")));
+                userInput = input.nextLine();
+            } while (!(userInput.equalsIgnoreCase("Y") && userInput.equalsIgnoreCase("N")));
         } while (userInput.equalsIgnoreCase("Y"));
     }//End of method addItem
 
+    /**
+     * @implNote This method will delete product from the Product file
+     */
     public void deleteItem() {
+
     }
 
     public void modifyItem() {
