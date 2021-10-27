@@ -207,7 +207,7 @@ public class Product {
      */
     @Contract("_ -> new")
     private @NotNull ArrayList<String> splitContentOfLine(@NotNull String line) {
-        return new ArrayList<String>(List.of(line.split("_", 3)));
+        return new ArrayList<String>(List.of(line.split("_", 4)));
     }//End of method splitContentOfLine
 
     /**
@@ -263,21 +263,22 @@ public class Product {
         }
     }//End of Method deleteItem
 
-    private void modifyRecord(int tempCode) {
+    public void modifyRecord(int tempCode) {
         int recordNumber = recordNumber(tempCode); //
         boolean valid = false; //flag for validity of Record
-        int tCode; //Act as temporary product id
+        int tCode = 0; //Act as temporary product id
         Scanner input = new Scanner(System.in);
         String userChoice; //Will be used for yes/no handler
-        double t_ItemCost; //Acts as a temporary product cost
-        double t_ItemPrice; // Acts as a temporary product price
-        String t_ItemName; //Acts as a temporary product name
+        double t_ItemCost = 0; //Acts as a temporary product cost
+        double t_ItemPrice = 0; // Acts as a temporary product price
+        String t_ItemName = null; //Acts as a temporary product name
 
         //Show the record for verification
         displayRecord(tempCode);
 
         //Ask if they really want to change the code
         do {
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("Change code?(Y/N) : ");
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
@@ -297,6 +298,7 @@ public class Product {
 
         //Ask if they really want to change the name
         do {
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("Change name?(Y/N) : ");
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
@@ -306,12 +308,13 @@ public class Product {
             valid = true;
             System.out.println("ENTER ITEM NAME TO ADD IN THE MENU");
             System.out.println("Enter item name: ");
-            itemName = input.nextLine();
-            valid = validateName(itemName);
+            t_ItemName = input.nextLine();
+            valid = validateName(t_ItemName);
         }
 
         //Ask if they really want to change the cost
         do {
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("Change cost?(Y/N) : ");
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
@@ -321,12 +324,13 @@ public class Product {
             valid = true;
             System.out.println("ENTER ITEM COST TO ADD IN THE MENU");
             System.out.println("Enter item cost: ");
-            itemCost = input.nextDouble();
-            valid = validateCost(itemCost);
+            t_ItemCost = input.nextDouble();
+            valid = validateCost(t_ItemCost);
         }
 
         //Ask if they really want to change the price
         do {
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("Change Price?(Y/N) : ");
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
@@ -336,8 +340,8 @@ public class Product {
             valid = true;
             System.out.println("ENTER ITEM Price TO ADD IN THE MENU");
             System.out.println("Enter item Price: ");
-            itemPrice = input.nextDouble();
-            valid = validatePrice(itemPrice);
+            t_ItemPrice = input.nextDouble();
+            valid = validatePrice(t_ItemPrice);
         }
         //Getting Confirmation from user
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -345,7 +349,37 @@ public class Product {
             System.out.println("Do you want to save this record? (y/n) : ");
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
-        // TODO: 27-10-2021 update specific record according to user choice ref(line 780)
+        itemCode = tCode;
+
+        // read file one line at a time
+        // replace line as you read the file and store updated lines in StringBuffer
+        // overwrite the file with the new lines
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(new FileReader(productsFile));
+            StringBuilder inputBuffer = new StringBuilder();
+            String line;
+
+            while ((line = file.readLine()) != null) {
+                if(line.equals(toString())){
+                    this.itemName = t_ItemName;
+                    this.itemCost = t_ItemCost;
+                    this.itemPrice = t_ItemPrice;
+                    line = toString(); // replace the line here
+                    inputBuffer.append(line);
+                    inputBuffer.append('\n');
+                }
+            }
+            file.close();
+
+            // write the new string with the replaced line OVER the same file
+            FileOutputStream fileOut = new FileOutputStream(productsFile);
+            fileOut.write(inputBuffer.toString().getBytes());
+            fileOut.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading file.");
+        }
     }//End of method modify item
 
     private void displayRecord(int tempCode) {
@@ -354,12 +388,13 @@ public class Product {
             while (sc.hasNext()) {
                 String lineOfFile = sc.nextLine();
                 ArrayList<String> filteredData = splitContentOfLine(lineOfFile);
-//                System.out.println(lineOfFile);
+//                System.out.println(filteredData);
                 if (Integer.parseInt(filteredData.get(0)) == tempCode) {
                     System.out.println("ID: " + filteredData.get(0) +
-                                       "Name: " + filteredData.get(1) +
-                                       "Cost: " + filteredData.get(2) +
-                                       "Price: " + filteredData.get(3));
+                                       " Name: " + filteredData.get(1) +
+                                       " Cost: " + filteredData.get(2)+
+                                       " Price: " + filteredData.get(3)
+                    );
                     break;
                 }
             }
