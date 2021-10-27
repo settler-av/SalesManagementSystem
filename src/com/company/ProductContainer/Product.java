@@ -4,6 +4,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static java.lang.Double.parseDouble;
@@ -266,16 +269,18 @@ public class Product {
     public void modifyRecord(int tempCode) {
         int recordNumber = recordNumber(tempCode); //
         boolean valid = false; //flag for validity of Record
-        int tCode = 0; //Act as temporary product id
+        int tCode = -1; //Act as temporary product id
         Scanner input = new Scanner(System.in);
         String userChoice; //Will be used for yes/no handler
-        double t_ItemCost = 0; //Acts as a temporary product cost
-        double t_ItemPrice = 0; // Acts as a temporary product price
-        String t_ItemName = null; //Acts as a temporary product name
+        double t_ItemCost; //Acts as a temporary product cost
+        double t_ItemPrice; // Acts as a temporary product price
+        String t_ItemName; //Acts as a temporary product name
 
         //Show the record for verification
         displayRecord(tempCode);
-
+        String tempList = getRecordByID(tempCode);
+        assert tempList != null;
+        ArrayList<String> tempFilter = splitContentOfLine(tempList);
         //Ask if they really want to change the code
         do {
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -283,19 +288,21 @@ public class Product {
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the item code
+        if(userChoice.equalsIgnoreCase("n")) itemCode = tempCode;
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM CODE TO ADD IN THE MENU");
             System.out.println("Enter item code: ");
             tCode = input.nextInt();
-            if (tCode == 0)
-                return;
+
             if (itemFound(tCode) && tCode != tempCode) {
                 valid = false;
                 System.out.println("The code is occupied");
             }
+            else{
+                itemCode = tCode;
+            }
         }
-
         //Ask if they really want to change the name
         do {
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -304,6 +311,7 @@ public class Product {
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the item name
         valid = false;
+        if(userChoice.equalsIgnoreCase("n")) itemName = (tempFilter.get(1));
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM NAME TO ADD IN THE MENU");
@@ -320,12 +328,16 @@ public class Product {
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the itemCost
         valid = false;
+        if(userChoice.equalsIgnoreCase("n")) itemCost = Double.parseDouble((tempFilter.get(2)));
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM COST TO ADD IN THE MENU");
             System.out.println("Enter item cost: ");
             t_ItemCost = input.nextDouble();
             valid = validateCost(t_ItemCost);
+            if(valid){
+                itemCost = t_ItemCost;
+            }
         }
 
         //Ask if they really want to change the price
@@ -336,12 +348,16 @@ public class Product {
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the itemCost
         valid = false;
+        if(userChoice.equalsIgnoreCase("n")) itemPrice = Double.parseDouble((tempFilter.get(3)));
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM Price TO ADD IN THE MENU");
             System.out.println("Enter item Price: ");
             t_ItemPrice = input.nextDouble();
             valid = validatePrice(t_ItemPrice);
+            if(valid){
+                itemPrice = t_ItemPrice;
+            }
         }
         //Getting Confirmation from user
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -349,39 +365,38 @@ public class Product {
             System.out.println("Do you want to save this record? (y/n) : ");
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
-        itemCode = tCode;
 
-        // read file one line at a time
-        // replace line as you read the file and store updated lines in StringBuffer
-        // overwrite the file with the new lines
+        List<String> fileContent = null;
         try {
-            // input the (modified) file content to the StringBuffer "input"
-            BufferedReader file = new BufferedReader(new FileReader(productsFile));
-            StringBuilder inputBuffer = new StringBuilder();
-            String line;
-
-            while ((line = file.readLine()) != null) {
-                if(line.equals(toString())){
-                    this.itemName = t_ItemName;
-                    this.itemCost = t_ItemCost;
-                    this.itemPrice = t_ItemPrice;
-                    line = toString(); // replace the line here
-                    inputBuffer.append(line);
-                    inputBuffer.append('\n');
+            fileContent = new ArrayList<>(Files.readAllLines(Path.of(productsFile.getAbsolutePath()), StandardCharsets.UTF_8));
+            for (int i = 0; i < fileContent.size(); i++) {
+                if (fileContent.get(i).equals(tempList)) {
+                    fileContent.set(i, itemCode+"_"+itemName+"_"+itemCost+"_"+itemPrice);
+                    break;
                 }
             }
-            file.close();
-
-            // write the new string with the replaced line OVER the same file
-            FileOutputStream fileOut = new FileOutputStream(productsFile);
-            fileOut.write(inputBuffer.toString().getBytes());
-            fileOut.close();
-
-        } catch (Exception e) {
-            System.out.println("Problem reading file.");
+            Files.write(Path.of(productsFile.getAbsolutePath()), fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }//End of method modify item
-
+    private String getRecordByID(int tempCode){
+        try {
+            Scanner sc = new Scanner(productsFile);
+            while (sc.hasNext()) {
+                String lineOfFile = sc.nextLine();
+                ArrayList<String> filteredData = splitContentOfLine(lineOfFile);
+//                System.out.println(filteredData);
+                if (Integer.parseInt(filteredData.get(0)) == tempCode) {
+                    return lineOfFile;
+                }
+            }
+            sc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     private void displayRecord(int tempCode) {
         try {
             Scanner sc = new Scanner(productsFile);
@@ -537,7 +552,7 @@ public class Product {
     @Override
     public String toString() {
         //Example 1_product_13.0_19.0
-        return "\n" + itemCode + "_" + itemName + "_" + itemCost + "_" + itemPrice;
+        return itemCode + "_" + itemName + "_" + itemCost + "_" + itemPrice + "\n";
     }//End of method toString
 
 }
