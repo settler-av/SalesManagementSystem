@@ -10,7 +10,7 @@ public class MainDemo {
         Main startingPoint = new Main();
 //        startingPoint.mainMenu();
         Product test = new Product();
-        test.deleteItem();
+//        test.sort();
     }
 }
 
