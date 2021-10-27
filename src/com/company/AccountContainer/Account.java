@@ -26,9 +26,37 @@ public class Account {
     private String NameOfAccountHolder;
 
     /**
-     * will show the
+     * THIS FUNCTION DISPLAYS THE LIST OF THE BILLS
      */
-    public void billList(){
+    public void billList() {
+
+    }
+
+    /**
+     * THIS FUNCTION PREPARES AND DISPLAYS THE BILL FOR THE GIVEN BILL NO. ACCORDING TO PURCHASES MADE.
+     * @param tempBillNo acts as a bill number for current bill
+     */
+    public void prepareBill(int tempBillNo) {
+
+    }
+
+    /**
+     * THIS FUNCTION RETURNS THE BILL NO. OF THE LAST RECORD IN THE BILL FILE (BILL.DAT)
+     */
+    public int lastBillNo() {
+
+    }
+
+    /**
+     * THIS FUNCTION ADDS THE RECORD IN THE BILL FILE (BILL.DAT)
+     * @param tempBillNo acts as a temporary bill number
+     * @param tempItemCode acts as a temporary item code
+     * @param tempItemName acts as a temporary item name
+     * @param tempQuantity acts as a temporary Quantity
+     * @param tempCost acts as a temporary cost
+     * @param tempPrice acts as a temporary price
+     */
+    public void addBill(int tempBillNo, int tempItemCode, String tempItemName, double tempQuantity, double tempCost, double tempPrice) {
 
     }
 }

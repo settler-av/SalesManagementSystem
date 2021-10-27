@@ -1,5 +1,7 @@
 package com.company.ProductContainer;
 
+import com.company.AccountContainer.Account;
+import com.company.Menu.Main;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -118,6 +120,7 @@ public class Product {
 
         System.out.println("Press any key to see the list...");
         input.nextLine();
+        listOfItem();
         System.out.print("Enter the code of product you want to delete : ");
         tempCode = input.nextInt();
         if (!itemFound(tempCode)) {
@@ -143,18 +146,53 @@ public class Product {
     }//End of method delete item
 
     public void modifyItem() {
+        int tempCode;
+        String userInput;
+        Scanner sc = new Scanner(System.in);
 // TODO: 27-10-2021 Make class modify item
+        System.out.println("````````````````````````````````````````````````````````````````````");
+        System.out.println("Press <ENTER> to see the list");
+        sc.nextLine();
+        listOfItem();
+        System.out.print("Enter Item Code of the item to be modify : ");
+        tempCode = sc.nextInt();
 
+        //Check whether record exist or not
+        if (!itemFound(tempCode)) {
+            System.out.println("Record not found");
+            System.out.println("Press <ENTER> to go back to main Menu");
+            sc.nextLine();
+            Main backButton = new Main();
+            backButton.mainMenu();
+        }
+
+        //Dispaly the record
+        displayRecord(tempCode);
+        //Get user confirmation
+        do {
+            System.out.println("Do you want to modify this record?");
+            sc.nextLine();
+            userInput = sc.nextLine();
+        } while (userInput.equalsIgnoreCase("Y") || userInput.equalsIgnoreCase("n"));
+        if (userInput.equalsIgnoreCase("n")) {
+            Main backButton = new Main();
+            backButton.mainMenu();
+        }
+        modifyRecord(tempCode);
+        sort();
+        System.out.println("Your Record has been modified successfully");
     }//End of method of modify item
 
-
+    /**
+     * @implNote Prints the list of the products from the file
+     */
     public void listOfItem() {
         sort();
         try {
             Scanner sc = new Scanner(productsFile);
             System.out.println("_____________________________");
             System.out.println("Code____Name______cost__Price");
-            while(sc.hasNext()){
+            while (sc.hasNext()) {
                 String line = sc.nextLine();
                 ArrayList<String> filterOfLine = splitContentOfLine(line);
                 displayRecord(Integer.parseInt(filterOfLine.get(0)));
@@ -168,8 +206,67 @@ public class Product {
         }
     }//End of method listOfItem
 
+    /**
+     * This function purchases the product Item in the menu
+     */
     public void purchase() {
-        System.out.println("Will purchase the product");
+        Account user = new Account();
+        Scanner input = new Scanner(System.in);
+        String userChoice;
+        int tempBillNo;
+        boolean isPurchased = false;
+        boolean isQuantityValid = false;
+        int tempCode;
+        double tempQuantity;
+        tempBillNo = user.lastBillNo();
+        tempBillNo++;
+        Date dateCreated = new Date();
+        do {
+            System.out.println("Press <ENTER> to see the list");
+            userChoice = input.nextLine();
+            listOfItem();
+            System.out.print("Enter Item Code of the item to be Purchase : ");
+            tempCode = input.nextInt();
+
+            //If user enters the wrong code of product
+            if(!itemFound(tempCode)){
+                System.out.println("Item Code not found");
+                if(isPurchased){
+                    user.prepareBill(tempBillNo);
+                }
+                return;
+            }
+
+            //Display the record of the particular
+            System.out.println(dateCreated);
+            displayRecord(tempCode);
+
+            do{
+                isQuantityValid = true;
+                System.out.print("Enter the quantity of purchase in kg : ");
+                tempQuantity = input.nextDouble();
+                if(tempQuantity >800 || tempQuantity <1){
+                    isQuantityValid = false;
+                    System.out.println("Invalid quantity : Range 1...800");
+                }
+            }while(!isQuantityValid);
+
+            do {
+                System.out.print("Do you want to cancel the purchase? ");
+                userChoice = input.nextLine();
+            }while(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N"));
+
+            if(userChoice.equalsIgnoreCase("N")){
+                isPurchased = true;
+                // TODO: 28-10-2021 add bill props from here ref(1020)
+            }
+            do {
+                System.out.println("Do you want to purchase more?");
+                userChoice = input.nextLine();
+            }while(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N"));
+        } while (userChoice.equalsIgnoreCase("Y"));
+        // TODO: 28-10-2021 complete prepare bill function from here
+        user.prepareBill(tempBillNo);
     }//End of method purchase
 
     /**
@@ -232,6 +329,7 @@ public class Product {
 
     /**
      * {@link} https://stackoverflow.com/questions/35970237/how-to-delete-a-line-from-text-line-by-id-java
+     *
      * @param tempCode the code of product that needs to be deleted
      * @status done
      * @implNote This method will delete particular entry from the file
@@ -283,10 +381,10 @@ public class Product {
     }//End of Method deleteItem
 
     /**
-     * @implNote This Function will work on the file level to modify the details of item
      * @param tempCode is code of item that needs to be modified
+     * @implNote This Function will work on the file level to modify the details of item
      */
-    public void modifyRecord(int tempCode) {
+    private void modifyRecord(int tempCode) {
         int recordNumber = recordNumber(tempCode); //
         boolean valid = false; //flag for validity of Record
         int tCode = -1; //Act as temporary product id
@@ -308,7 +406,7 @@ public class Product {
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the item code
-        if(userChoice.equalsIgnoreCase("n")) itemCode = tempCode;
+        if (userChoice.equalsIgnoreCase("n")) itemCode = tempCode;
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM CODE TO ADD IN THE MENU");
@@ -318,8 +416,7 @@ public class Product {
             if (itemFound(tCode) && tCode != tempCode) {
                 valid = false;
                 System.out.println("The code is occupied");
-            }
-            else{
+            } else {
                 itemCode = tCode;
             }
         }
@@ -327,11 +424,12 @@ public class Product {
         do {
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("Change name?(Y/N) : ");
+            input.nextLine();
             userChoice = input.nextLine();
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the item name
         valid = false;
-        if(userChoice.equalsIgnoreCase("n")) itemName = (tempFilter.get(1));
+        if (userChoice.equalsIgnoreCase("n")) itemName = (tempFilter.get(1));
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM NAME TO ADD IN THE MENU");
@@ -348,14 +446,14 @@ public class Product {
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the itemCost
         valid = false;
-        if(userChoice.equalsIgnoreCase("n")) itemCost = Double.parseDouble((tempFilter.get(2)));
+        if (userChoice.equalsIgnoreCase("n")) itemCost = Double.parseDouble((tempFilter.get(2)));
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM COST TO ADD IN THE MENU");
             System.out.println("Enter item cost: ");
             t_ItemCost = input.nextDouble();
             valid = validateCost(t_ItemCost);
-            if(valid){
+            if (valid) {
                 itemCost = t_ItemCost;
             }
         }
@@ -368,14 +466,14 @@ public class Product {
         } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
         //Block to change the itemCost
         valid = false;
-        if(userChoice.equalsIgnoreCase("n")) itemPrice = Double.parseDouble((tempFilter.get(3)));
+        if (userChoice.equalsIgnoreCase("n")) itemPrice = Double.parseDouble((tempFilter.get(3)));
         while (userChoice.equalsIgnoreCase("y") && !valid) {
             valid = true;
             System.out.println("ENTER ITEM Price TO ADD IN THE MENU");
             System.out.println("Enter item Price: ");
             t_ItemPrice = input.nextDouble();
             valid = validatePrice(t_ItemPrice);
-            if(valid){
+            if (valid) {
                 itemPrice = t_ItemPrice;
             }
         }
@@ -391,7 +489,7 @@ public class Product {
             fileContent = new ArrayList<>(Files.readAllLines(Path.of(productsFile.getAbsolutePath()), StandardCharsets.UTF_8));
             for (int i = 0; i < fileContent.size(); i++) {
                 if (fileContent.get(i).equals(tempList)) {
-                    fileContent.set(i, itemCode+"_"+itemName+"_"+itemCost+"_"+itemPrice);
+                    fileContent.set(i, itemCode + "_" + itemName + "_" + itemCost + "_" + itemPrice);
                     break;
                 }
             }
@@ -400,7 +498,13 @@ public class Product {
             e.printStackTrace();
         }
     }//End of method modify item
-    private String getRecordByID(int tempCode){
+
+    /**
+     *
+     * @param tempCode ID number of product
+     * @return information of that product in form of single line
+     */
+    private String getRecordByID(int tempCode) {
         try {
             Scanner sc = new Scanner(productsFile);
             while (sc.hasNext()) {
@@ -417,6 +521,11 @@ public class Product {
         }
         return null;
     }
+
+    /**
+     * Displays the record of the product with given id
+     * @param tempCode id number of required product
+     */
     private void displayRecord(int tempCode) {
         try {
             Scanner sc = new Scanner(productsFile);
@@ -430,7 +539,7 @@ public class Product {
 //                                       " Cost: " + filteredData.get(2)+
 //                                       " Price: " + filteredData.get(3)
 //                    );
-                    System.out.printf("%-5d %10s %5.2f %5.2f \n",Integer.parseInt(filteredData.get(0)),filteredData.get(1),Double.parseDouble(filteredData.get(2)), Double.parseDouble(filteredData.get(3)));
+                    System.out.printf("%-5d %10s %5.2f %5.2f \n", Integer.parseInt(filteredData.get(0)), filteredData.get(1), Double.parseDouble(filteredData.get(2)), Double.parseDouble(filteredData.get(3)));
 
                     break;
                 }
@@ -468,6 +577,11 @@ public class Product {
         return found;
     }//End of method itemFound
 
+    /**
+     *
+     * @param tempCode
+     * @return
+     */
     private int recordNumber(int tempCode) {
         return 0;
     }//End of method record number
