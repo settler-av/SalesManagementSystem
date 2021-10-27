@@ -144,11 +144,28 @@ public class Product {
 
     public void modifyItem() {
 // TODO: 27-10-2021 Make class modify item
+
     }//End of method of modify item
 
 
     public void listOfItem() {
-
+        sort();
+        try {
+            Scanner sc = new Scanner(productsFile);
+            System.out.println("_____________________________");
+            System.out.println("Code____Name______cost__Price");
+            while(sc.hasNext()){
+                String line = sc.nextLine();
+                ArrayList<String> filterOfLine = splitContentOfLine(line);
+                displayRecord(Integer.parseInt(filterOfLine.get(0)));
+            }
+            System.out.println("````````````````````````````");
+            System.out.println("Press <ENTER> key to continue...");
+            sc = new Scanner(System.in);
+            sc.nextLine();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }//End of method listOfItem
 
     public void purchase() {
@@ -215,7 +232,6 @@ public class Product {
 
     /**
      * {@link} https://stackoverflow.com/questions/35970237/how-to-delete-a-line-from-text-line-by-id-java
-     *
      * @param tempCode the code of product that needs to be deleted
      * @status done
      * @implNote This method will delete particular entry from the file
@@ -266,6 +282,10 @@ public class Product {
         }
     }//End of Method deleteItem
 
+    /**
+     * @implNote This Function will work on the file level to modify the details of item
+     * @param tempCode is code of item that needs to be modified
+     */
     public void modifyRecord(int tempCode) {
         int recordNumber = recordNumber(tempCode); //
         boolean valid = false; //flag for validity of Record
@@ -405,11 +425,13 @@ public class Product {
                 ArrayList<String> filteredData = splitContentOfLine(lineOfFile);
 //                System.out.println(filteredData);
                 if (Integer.parseInt(filteredData.get(0)) == tempCode) {
-                    System.out.println("ID: " + filteredData.get(0) +
-                                       " Name: " + filteredData.get(1) +
-                                       " Cost: " + filteredData.get(2)+
-                                       " Price: " + filteredData.get(3)
-                    );
+//                    System.out.println("ID: " + filteredData.get(0) +
+//                                       " Name: " + filteredData.get(1) +
+//                                       " Cost: " + filteredData.get(2)+
+//                                       " Price: " + filteredData.get(3)
+//                    );
+                    System.out.printf("%-5d %10s %5.2f %5.2f \n",Integer.parseInt(filteredData.get(0)),filteredData.get(1),Double.parseDouble(filteredData.get(2)), Double.parseDouble(filteredData.get(3)));
+
                     break;
                 }
             }
