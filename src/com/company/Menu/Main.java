@@ -20,9 +20,7 @@ public class Main {
             System.out.println("3: EDIT PRODUCTS FILE");
             System.out.println("4: BILLS REPORT");
             System.out.println("0: QUIT");
-            System.out.print("Enter Your Choice : ");
-            choice = input.nextInt();
-            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            choice = getChoice(input);
             switch (choice) {
                 case 1:
                     Product P = new Product();
@@ -52,17 +50,17 @@ public class Main {
     private void editMenu() {
         Scanner input = new Scanner(System.in);
         int choice;
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("                      E D I T _ M E N U");
-        System.out.println("~~~~~~~~~~~~~~~~");
-        System.out.println("1: ADD PRODUCTS");
-        System.out.println("2: MODIFY PRODUCTS");
-        System.out.println("3: DELETE PRODUCTS");
-        System.out.println("0: EXIT");
-        System.out.print("Enter Choice : ");
-        choice = input.nextInt();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
         while (true) {
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("                      E D I T _ M E N U");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
+            System.out.println("1: ADD PRODUCTS");
+            System.out.println("2: MODIFY PRODUCTS");
+            System.out.println("3: DELETE PRODUCTS");
+            System.out.println("0: EXIT");
+            choice = getChoice(input);
             switch (choice) {
                 case 1:
                     Product P = new Product();
@@ -81,12 +79,34 @@ public class Main {
                     del.deleteItem();
                     break;
                 case 0:
-                    System.out.println("Thank you for using");
-                    exit(0);
+                    mainMenu();
                     break;
                 default:
                     System.out.println("Invalid choice");
             }
         }
     }
+
+    private int getChoice(Scanner input) {
+        int choice;
+        do {
+            System.out.print("Enter Choice : ");
+            choice = input.nextInt();
+        } while (!(choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8 || choice == 9 || choice == 0));
+
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        return choice;
+    }
+
+//    public static void clrscr() {
+//        //Clears Screen in java
+//        try {
+//            if (System.getProperty("os.name").contains("Windows"))
+//                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+//            else
+//                Runtime.getRuntime().exec("clear");
+//        } catch (IOException | InterruptedException ignored) {
+//            System.out.println("Exception");
+//        }
+//    }
 }
