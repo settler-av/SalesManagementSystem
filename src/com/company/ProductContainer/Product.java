@@ -43,11 +43,7 @@ public class Product {
                 System.out.println("Enter item name to add in the menu");
                 System.out.print("Item Name : ");
                 itemName = input.nextLine();
-                itemName = itemName.toUpperCase();
-                if (itemName.length() < 1 || itemName.length() > 20) {
-                    isValid = false;
-                    System.out.println("Range of name = 1 ... 20");
-                }
+                isValid = validateName(itemName);
             } while (!isValid);
             System.out.println("Item Name (Confirmed) : " + itemName);
 
@@ -58,10 +54,7 @@ public class Product {
                 System.out.print("Item Cost : ");
                 itemCostStr = input.nextLine();
                 itemCost = parseDouble(itemCostStr);
-                if (itemCost < 1 || itemCost > 800) {
-                    isValid = false;
-                    System.out.println("Range of cost = 1 ... 800");
-                }
+                isValid = validateCost(itemCost);
             } while (!isValid);
             System.out.println("Item Cost (Confirmed): " + itemCost);
 
@@ -72,10 +65,7 @@ public class Product {
                 System.out.print("Item price : ");
                 itemPriceStr = input.nextLine();
                 itemPrice = parseDouble(itemPriceStr);
-                if (itemPrice < 1 || itemPrice > 800) {
-                    isValid = false;
-                    System.out.println("Range of price = " + itemCost + "... 1000");
-                }
+                isValid = validatePrice(itemPrice);
             } while (!isValid);
             System.out.println("Item Price (Confirmed): " + itemPrice);
 
@@ -274,7 +264,88 @@ public class Product {
     }//End of Method deleteItem
 
     private void modifyRecord(int tempCode) {
+        int recordNumber = recordNumber(tempCode); //
+        boolean valid = false; //flag for validity of Record
+        int tCode; //Act as temporary product id
+        Scanner input = new Scanner(System.in);
+        String userChoice; //Will be used for yes/no handler
+        double t_ItemCost; //Acts as a temporary product cost
+        double t_ItemPrice; // Acts as a temporary product price
+        String t_ItemName; //Acts as a temporary product name
 
+        //Show the record for verification
+        displayRecord(tempCode);
+
+        //Ask if they really want to change the code
+        do {
+            System.out.println("Change code?(Y/N) : ");
+            userChoice = input.nextLine();
+        } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
+        //Block to change the item code
+        while (userChoice.equalsIgnoreCase("y") && !valid) {
+            valid = true;
+            System.out.println("ENTER ITEM CODE TO ADD IN THE MENU");
+            System.out.println("Enter item code: ");
+            tCode = input.nextInt();
+            if (tCode == 0)
+                return;
+            if (itemFound(tCode) && tCode != tempCode) {
+                valid = false;
+                System.out.println("The code is occupied");
+            }
+        }
+
+        //Ask if they really want to change the name
+        do {
+            System.out.println("Change name?(Y/N) : ");
+            userChoice = input.nextLine();
+        } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
+        //Block to change the item name
+        valid = false;
+        while (userChoice.equalsIgnoreCase("y") && !valid) {
+            valid = true;
+            System.out.println("ENTER ITEM NAME TO ADD IN THE MENU");
+            System.out.println("Enter item name: ");
+            itemName = input.nextLine();
+            valid = validateName(itemName);
+        }
+
+        //Ask if they really want to change the cost
+        do {
+            System.out.println("Change cost?(Y/N) : ");
+            userChoice = input.nextLine();
+        } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
+        //Block to change the itemCost
+        valid = false;
+        while (userChoice.equalsIgnoreCase("y") && !valid) {
+            valid = true;
+            System.out.println("ENTER ITEM COST TO ADD IN THE MENU");
+            System.out.println("Enter item cost: ");
+            itemCost = input.nextDouble();
+            valid = validateCost(itemCost);
+        }
+
+        //Ask if they really want to change the price
+        do {
+            System.out.println("Change Price?(Y/N) : ");
+            userChoice = input.nextLine();
+        } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
+        //Block to change the itemCost
+        valid = false;
+        while (userChoice.equalsIgnoreCase("y") && !valid) {
+            valid = true;
+            System.out.println("ENTER ITEM Price TO ADD IN THE MENU");
+            System.out.println("Enter item Price: ");
+            itemPrice = input.nextDouble();
+            valid = validatePrice(itemPrice);
+        }
+        //Getting Confirmation from user
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        do {
+            System.out.println("Do you want to save this record? (y/n) : ");
+            userChoice = input.nextLine();
+        } while (!(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N")));
+        // TODO: 27-10-2021 update specific record according to user choice ref(line 780)
     }//End of method modify item
 
     private void displayRecord(int tempCode) {
@@ -381,6 +452,46 @@ public class Product {
             e.printStackTrace();
         }
     }//End of method sort
+
+    /**
+     * @param itemName the name of the item
+     * @return boolean decision
+     * @implNote Will validate the input given by the user
+     */
+    boolean validateName(String itemName) {
+        this.itemName = itemName.toUpperCase();
+        if (itemName.length() < 1 || itemName.length() > 20) {
+            System.out.println("Range of name = 1 ... 20");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param itemCost the cost of the item
+     * @return boolean decision
+     * @implNote Will validate the input given by the user
+     */
+    boolean validateCost(double itemCost) {
+        if (itemCost < 1 || itemCost > 800) {
+            System.out.println("Range of cost = 1 ... 800");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param itemPrice the cost of the item
+     * @return boolean decision
+     * @implNote Will validate the input given by the user
+     */
+    boolean validatePrice(double itemPrice) {
+        if (itemPrice < 1 || itemPrice > 800) {
+            System.out.println("Range of price = " + itemCost + "... 1000");
+            return false;
+        }
+        return true;
+    }
 
     /**
      * @return the string of current state of object
