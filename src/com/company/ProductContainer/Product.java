@@ -16,7 +16,7 @@ import static java.lang.Double.parseDouble;
 /**
  * @implNote It controls over all functions related to product item
  */
-public class Product {
+public class Product implements IHelper{
     int itemCode;
     String itemName;
     double itemCost;
@@ -149,7 +149,6 @@ public class Product {
         int tempCode;
         String userInput;
         Scanner sc = new Scanner(System.in);
-// TODO: 27-10-2021 Make class modify item
         System.out.println("````````````````````````````````````````````````````````````````````");
         System.out.println("Press <ENTER> to see the list");
         sc.nextLine();
