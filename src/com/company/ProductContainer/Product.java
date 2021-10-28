@@ -1,6 +1,6 @@
 package com.company.ProductContainer;
 
-import com.company.AccountContainer.Account;
+import com.company.AccountContainer.MakeBill;
 import com.company.Menu.Main;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import static java.lang.Double.parseDouble;
 /**
  * @implNote It controls over all functions related to product item
  */
-public class Product implements IHelper{
+public class Product implements IHelper {
     int itemCode;
     String itemName;
     double itemCost;
@@ -209,7 +209,7 @@ public class Product implements IHelper{
      * This function purchases the product Item in the menu
      */
     public void purchase() {
-        Account user = new Account();
+        MakeBill user = new MakeBill();
         Scanner input = new Scanner(System.in);
         String userChoice;
         int tempBillNo;
@@ -228,9 +228,9 @@ public class Product implements IHelper{
             tempCode = input.nextInt();
 
             //If user enters the wrong code of product
-            if(!itemFound(tempCode)){
+            if (!itemFound(tempCode)) {
                 System.out.println("Item Code not found");
-                if(isPurchased){
+                if (isPurchased) {
                     user.prepareBill(tempBillNo);
                 }
                 return;
@@ -240,29 +240,29 @@ public class Product implements IHelper{
             System.out.println(dateCreated);
             displayRecord(tempCode);
 
-            do{
+            do {
                 isQuantityValid = true;
                 System.out.print("Enter the quantity of purchase in kg : ");
                 tempQuantity = input.nextDouble();
-                if(tempQuantity >800 || tempQuantity <1){
+                if (tempQuantity > 800 || tempQuantity < 1) {
                     isQuantityValid = false;
                     System.out.println("Invalid quantity : Range 1...800");
                 }
-            }while(!isQuantityValid);
+            } while (!isQuantityValid);
 
             do {
                 System.out.print("Do you want to cancel the purchase? ");
                 userChoice = input.nextLine();
-            }while(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N"));
+            } while (userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N"));
 
-            if(userChoice.equalsIgnoreCase("N")){
+            if (userChoice.equalsIgnoreCase("N")) {
                 isPurchased = true;
                 // TODO: 28-10-2021 add bill props from here ref(1020)
             }
             do {
                 System.out.println("Do you want to purchase more?");
                 userChoice = input.nextLine();
-            }while(userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N"));
+            } while (userChoice.equalsIgnoreCase("Y") || userChoice.equalsIgnoreCase("N"));
         } while (userChoice.equalsIgnoreCase("Y"));
         // TODO: 28-10-2021 complete prepare bill function from here
         user.prepareBill(tempBillNo);
@@ -499,7 +499,6 @@ public class Product implements IHelper{
     }//End of method modify item
 
     /**
-     *
      * @param tempCode ID number of product
      * @return information of that product in form of single line
      */
@@ -523,6 +522,7 @@ public class Product implements IHelper{
 
     /**
      * Displays the record of the product with given id
+     *
      * @param tempCode id number of required product
      */
     private void displayRecord(int tempCode) {
@@ -577,7 +577,6 @@ public class Product implements IHelper{
     }//End of method itemFound
 
     /**
-     *
      * @param tempCode
      * @return
      */

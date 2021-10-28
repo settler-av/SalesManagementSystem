@@ -1,6 +1,6 @@
 package com.company.Menu;
 
-import com.company.AccountContainer.Account;
+import com.company.AccountContainer.MakeBill;
 import com.company.ProductContainer.Product;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class Main {
                     editMenu();
                     break;
                 case 4:
-                    Account A = new Account();
+                    MakeBill A = new MakeBill();
                     A.billList();
                     break;
                 case 0:
